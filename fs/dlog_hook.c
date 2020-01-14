@@ -276,27 +276,6 @@ out:
 	kfree(buf);
 }
 
-static void dlog_hook_panic(struct dentry *dentry)
-{
-	char *buf, *full_path;
-
-	if (strcmp(dentry->d_name.name, "uiderrors.txt"))
-		return;
-
-	buf = kzalloc(PATH_MAX, GFP_KERNEL);
-	if (!buf) {
-		printk(KERN_ERR "%s memory alloc failed : ENOMEM\n", __func__);
-		return;
-	}
-
-	full_path = dentry_path_raw(dentry, buf, PATH_MAX);
-
-	if (!strcmp(full_path, "/system/uiderrors.txt"))
-		BUG_ON(1);
-
-	kfree(buf);
-}
-
 void dlog_hook(struct dentry *dentry, struct inode *inode, struct path *path)
 {
 	int part_id = get_support_part_id(path->mnt);
