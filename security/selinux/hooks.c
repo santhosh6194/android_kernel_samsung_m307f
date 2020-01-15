@@ -188,27 +188,6 @@ static atomic_t selinux_secmark_refcount = ATOMIC_INIT(0);
 static DEFINE_MUTEX(selinux_sdcardfs_lock);
 // ] SEC_SELINUX_PORTING_COMMON
 
-#ifdef CONFIG_SECURITY_SELINUX_DEVELOP
-// [ SEC_SELINUX_PORTING_COMMON
-#if defined(CONFIG_ALWAYS_ENFORCE)
-//CONFIG_RKP_KDP
-int selinux_enforcing __kdp_ro;
-#else
-int selinux_enforcing;
-#endif
-
-// ] SEC_SELINUX_PORTING_COMMON
-
-static int __init enforcing_setup(char *str)
-{
-	unsigned long enforcing;
-	if (!kstrtoul(str, 0, &enforcing))
-		selinux_enforcing = enforcing ? 1 : 0;
-	return 1;
-}
-__setup("enforcing=", enforcing_setup);
-#endif
-
 #ifdef CONFIG_SECURITY_SELINUX_BOOTPARAM
 int selinux_enabled __kdp_ro = CONFIG_SECURITY_SELINUX_BOOTPARAM_VALUE;
 //CONFIG_RKP_KDP
@@ -5335,13 +5314,9 @@ static int selinux_nlmsg_perm(struct sock *sk, struct sk_buff *skb)
 			       sk->sk_protocol, nlh->nlmsg_type,
 			       secclass_map[sksec->sclass - 1].name,
 			       task_pid_nr(current), current->comm);
-// [ SEC_SELINUX_PORTING_COMMON
-#ifdef CONFIG_ALWAYS_ENFORCE
-			if (security_get_allow_unknown())
-#else
+
 			if (!selinux_enforcing || security_get_allow_unknown())
-#endif
-// ] SEC_SELINUX_PORTING_COMMON
+
 				err = 0;
 		}
 
