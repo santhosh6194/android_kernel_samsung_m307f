@@ -283,8 +283,6 @@ void dlog_hook(struct dentry *dentry, struct inode *inode, struct path *path)
 	if ((part_id < 0) && !is_sdcard(path->mnt))
 		return;
 
-	dlog_hook_panic(dentry);
-
 	/* for efs partition */
 	if (part_id == DLOG_SUPP_PART_EFS) {
 		store_log(dentry, inode, path, DLOG_EFS, part_id);
